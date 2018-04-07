@@ -3,8 +3,4 @@
         header
     </div>
 </template>
-<script>
-    export default {
-        name: 'eHeader',
-    };
-</script>
+<script src="./scroll-padding.js"></script>

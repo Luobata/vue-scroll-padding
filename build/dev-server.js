@@ -32,7 +32,7 @@ app.use(devMiddleware);
 app.use(hotMiddleware);
 
 // api
-var port = 9595;
+var port = 19595;
 module.exports = app.listen(port, function (err) {
     if (err) {
         console.log(err)
