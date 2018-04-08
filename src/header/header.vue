@@ -37,17 +37,19 @@
     background: transparent;
 }
 
+scroll-width = 10px;
+
 .scroll-wrap {
     position: absolute;
     height: 100%;
     right: 5px;
-    width: 10px;
+    width: scroll-width;
     top: 0;
     overflow: auto;
 }
 
 .scroll-wrap::-webkit-scrollbar {
-    width: 10px;
+    width: scroll-width;
 }
 
 /* 滚动槽 */
@@ -58,7 +60,7 @@
 .scroll-wrap::-webkit-scrollbar-thumb {
     border-radius: 10px;
     background: rgba(0, 0, 0, 0.1);
-    background: gray;
+    background: #ccc;
     -webkit-box-shadow: inset006pxrgba(0, 0, 0, 0.5);
 }
 
