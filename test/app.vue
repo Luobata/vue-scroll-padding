@@ -2,9 +2,12 @@
     div.wrap
         vue-scroll-padding.padding(
             ref="padding"
-            @changeCity='changeCity')
+            :vertical="true"
+        )
             .ul(slot="wrap" ref="content")
                 .li(v-for="item in lists") {{ item }}
+    
+        .button(@click="toggle")
 </template>
 <style scoped lang="stylus">
 .wrap {
@@ -26,17 +29,24 @@
         background: red;
     }
 }
+
+.button {
+    width: 100px;
+    height: 100px;
+    background: red;
+}
 </style>
 <script>
 export default {
     data() {
         return {
             lists: [1, 2, 3],
+            lists: [1],
         };
     },
     methods: {
-        changeCity(city) {
-            console.log(city);
+        toggle() {
+            this.lists = [1, 2, 3, 4];
         },
     },
     mounted() {

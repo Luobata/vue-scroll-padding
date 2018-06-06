@@ -1,10 +1,9 @@
 <template lang="pug">
 .vue-scroll-wrap
-    .vue-scroll-padding(ref="scroll-padding"  @scroll="parentScroll")
-        // .scroll-clip
-        slot(name="wrap")
-    .scroll-wrap(ref="scroll-wrap" v-if="hasPadding" @scroll="scroll" @mousedown="down" @mouseup="up")
-        .scroll(:style="{'height': height}")
+    .vue-scroll-padding(ref="padding"  @scroll="parentScroll")
+        .scroll-clip
+            slot(name="wrap")
+        .scroll-bar-vertical(v-if="vertical && verticalShow")
 </template>
 <style lang="stylus" scoped>
 .vue-scroll-wrap {

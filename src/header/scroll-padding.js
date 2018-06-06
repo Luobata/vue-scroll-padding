@@ -1,14 +1,27 @@
 export default {
     name: 'vue-scroll-padding',
-    props: {},
+    props: {
+        vertical: {
+            type: Boolean,
+            default: false,
+        },
+    },
     data() {
         return {
+            verticalShow: false,
             hasPadding: true,
             content: '',
             height: '0px',
             scrollWrap: '',
             scrollPadding: '',
             scrollEelement: 'wrap',
+            verticalPadding: {
+                width: '5px',
+                height: '',
+                top: '',
+                right: '',
+                left: '',
+            },
         };
     },
     watch: {
@@ -21,6 +34,23 @@ export default {
         },
     },
     methods: {
+        computedShow() {
+            // resize 计算滚动条是否展示
+            const wrap = this.$slots.wrap[0].elm;
+            if (!wrap) {
+                return;
+            }
+
+            const rect = wrap.getBoundingClientRect();
+            const parentRect = this.$refs.padding.getBoundingClientRect();
+            if (parentRect.height > rect.height && tthis.vertical) {
+                this.verticalShow = true;
+                this.getVertical();
+            } else {
+                this.verticalShow = false;
+            }
+        },
+        getVertical() {},
         update(content) {
             this.content = content;
         },
