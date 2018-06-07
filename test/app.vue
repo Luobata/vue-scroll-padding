@@ -10,31 +10,23 @@
         .button(@click="toggle")
 </template>
 <style scoped lang="stylus">
-.wrap {
-    padding: 20px;
-}
-
-.padding {
-    width: 200px;
-    border: 1px solid red;
-
-    .li {
-        width: 100%;
-        height: 80px;
-        background: yellow;
-        cursor: pointer;
-    }
-
-    .li:hover {
-        background: red;
-    }
-}
-
-.button {
-    width: 100px;
-    height: 100px;
-    background: red;
-}
+.wrap
+    padding 150px
+.padding
+    width 200px
+    border 1px solid red
+    .li
+        width 100%
+        height 80px
+        background yellow
+        cursor pointer
+        border-bottom 1px solid green
+    .li:hover
+        background red
+.button
+    width 100px
+    height 100px
+    background red
 </style>
 <script>
 export default {
