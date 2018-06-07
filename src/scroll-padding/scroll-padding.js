@@ -4,14 +4,15 @@ import { addResizeListener, removeResizeListener } from 'Lib/resize-event';
 export default {
     name: 'vue-scroll-padding',
     props: {
-        vertical: {
-            type: Boolean,
-            default: false,
-        },
         verticalDirection: {
             // enums ['left', 'right']
             type: String,
             default: 'right',
+        },
+        horizonDirection: {
+            // enums ['top', 'bottom']
+            type: String,
+            default: 'bottom',
         },
         maxHeight: {
             type: String,
@@ -22,7 +23,9 @@ export default {
     },
     data() {
         return {
+            wrap: '',
             verticalShow: false,
+            horizonShow: false,
             hasPadding: true,
             content: '',
             height: '0px',
@@ -36,6 +39,13 @@ export default {
                 right: '',
                 left: '',
             },
+            horizonPadding: {
+                width: '',
+                height: 5,
+                left: '',
+                top: '',
+                bottom: '',
+            },
             resizeEvent: '',
             dragging: {
                 vertical: false,
@@ -45,72 +55,111 @@ export default {
             horizonStart: 0,
             inner: {
                 // 滚动区域的高度和宽度 考虑到padding
-                height: 0,
-                width: 0,
-                paddingTop: 10,
-                paddingBottom: 10,
-                paddingLeft: 10,
-                paddingRight: 10,
+                vertical: {
+                    height: 0,
+                    width: 0,
+                    paddingTop: 10,
+                    paddingBottom: 10,
+                    paddingLeft: 10,
+                    paddingRight: 10,
+                },
+                horizon: {
+                    height: 0,
+                    width: 0,
+                    paddingTop: 10,
+                    paddingBottom: 10,
+                    paddingLeft: 10,
+                    paddingRight: 10,
+                },
             },
         };
     },
-    watch: {
-        content(val) {
-            console.log(val);
-            if (val) {
-                console.log(val.getBoundingClientRect());
-                this.height = val.getBoundingClientRect().height + 'px';
-            }
-        },
-    },
+    watch: {},
     methods: {
-        computedShow() {
+        computedShow(type) {
             // resize 计算滚动条是否展示
-            const wrap = this.$slots.wrap[0].elm;
-            if (!wrap) {
-                return;
-            }
-
-            const rect = wrap.getBoundingClientRect();
+            const rect = this.wrap.getBoundingClientRect();
             const parentRect = this.scrollPadding.getBoundingClientRect();
-            if (parentRect.height < rect.height && this.vertical) {
+            if (parentRect.height < rect.height) {
                 this.verticalShow = true;
-                this.getVertical(parentRect, rect);
+                if (type !== 'vertical') {
+                    this.getVertical(parentRect, rect);
+                }
             } else {
                 this.verticalShow = false;
+            }
+
+            if (parentRect.width < rect.width) {
+                this.horizonShow = true;
+                if (type !== 'horizon') {
+                    this.getHorizon(parentRect, rect);
+                }
+            } else {
+                this.horizonShow = false;
             }
         },
         getVertical(parent, inner) {
             // 滚动区域完整高度
-            this.inner.height =
+            this.inner.vertical.height =
                 parent.height -
-                this.inner.paddingTop -
-                this.inner.paddingBottom;
+                this.inner.vertical.paddingTop -
+                this.inner.vertical.paddingBottom;
             // 滚动区域顶部距离
             const scrollHeight =
-                (parent.height / inner.height) * this.inner.height;
+                (parent.height / inner.height) * this.inner.vertical.height;
             const scrollTop =
                 (this.scrollPadding.scrollTop / parent.height) * scrollHeight;
-            this.verticalPadding.top = scrollTop + this.inner.paddingTop;
+            this.verticalPadding.top =
+                scrollTop + this.inner.vertical.paddingTop;
             this.verticalPadding.height = scrollHeight;
 
             if (this.verticalDirection === 'right') {
-                this.verticalPadding.right = this.inner.paddingRight;
+                this.verticalPadding.right = this.inner.vertical.paddingRight;
             } else {
-                this.verticalPadding.left = this.inner.paddingLeft;
+                this.verticalPadding.left = this.inner.vertical.paddingLeft;
             }
+        },
+        getHorizon(parent, inner) {
+            // 滚动区域完整高度
+            this.inner.horizon.width =
+                parent.width -
+                this.inner.horizon.paddingTop -
+                this.inner.horizon.paddingBottom;
+            // 滚动区域顶部距离
+            const scrollWidth =
+                (parent.width / inner.width) * this.inner.horizon.width;
+            const scrollLeft =
+                (this.scrollPadding.scrollLeft / parent.width) * scrollWidth;
+            this.horizonPadding.left =
+                scrollLeft + this.inner.horizon.paddingLeft;
+            this.horizonPadding.width = scrollWidth;
+
+            if (this.horizonDirection === 'bottom') {
+                this.horizonPadding.bottom = this.inner.horizon.paddingBottom;
+            } else {
+                this.horizonPadding.top = this.inner.horizon.paddingTop;
+            }
+        },
+        getHorizonScrollLeft() {
+            return (
+                ((this.horizonPadding.left - this.inner.horizon.paddingLeft) /
+                    this.horizonPadding.width) *
+                this.scrollPadding.getBoundingClientRect().width
+            );
         },
         scrollVertical(movement = 0) {
             const targetY = this.verticalPadding.top + movement;
-            if (targetY < this.inner.paddingTop) {
-                this.verticalPadding.top = this.inner.paddingTop;
+            if (targetY < this.inner.vertical.paddingTop) {
+                this.verticalPadding.top = this.inner.vertical.paddingTop;
             } else if (
-                targetY + this.verticalPadding.height - this.inner.paddingTop >
-                this.inner.height
+                targetY +
+                    this.verticalPadding.height -
+                    this.inner.vertical.paddingTop >
+                this.inner.vertical.height
             ) {
                 this.verticalPadding.top =
-                    this.inner.height +
-                    this.inner.paddingTop -
+                    this.inner.vertical.height +
+                    this.inner.vertical.paddingTop -
                     this.verticalPadding.height;
             } else {
                 this.verticalPadding.top = targetY;
@@ -120,8 +169,9 @@ export default {
                 (movement / this.verticalPadding.height) *
                 this.scrollPadding.getBoundingClientRect().height;
             this.scrollPadding.scrollTop += scrollY;
+            // this.scrollPadding.scrollLeft = this.getHorizonScrollLeft();
         },
-        scrollHorizion() {},
+        scrollHorizion(movement) {},
         down(args, type) {
             this.dragging[type] = true;
             const e = args[0];
@@ -147,23 +197,30 @@ export default {
             this.dragging.vertical = false;
             this.dragging.horizon = false;
         },
-        update(content) {
-            this.content = content;
-        },
         parentScroll(e) {
-            if (this.dragging.vertical) {
-                return;
-            }
-            this.resizeEvent();
             e.stopPropagation();
             e.preventDefault();
+            // 不能直接return 拖拽vertical的时候 可以触发horizon的滚动
+            // if (this.dragging.vertical || this.dragging.horizon) {
+            //     return;
+            // }
+            if (this.dragging.vertical) {
+                this.resizeEvent('vertical');
+            } else {
+                this.resizeEvent('horizon');
+            }
         },
     },
     mounted() {
         this.scrollContent = this.$refs.content;
         this.scrollPadding = this.$refs.padding;
-        this.resizeEvent = throttle(0, () => {
-            this.computedShow();
+        this.resizeEvent = throttle(0, type => {
+            const wrap = this.$slots.wrap[0].elm;
+            if (!wrap) {
+                return;
+            }
+            this.wrap = wrap;
+            this.computedShow(type);
         });
         addResizeListener(this.scrollContent, this.resizeEvent);
         document.addEventListener('mousemove', this.move);

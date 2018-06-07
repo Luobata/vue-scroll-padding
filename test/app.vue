@@ -47,7 +47,7 @@ export default {
         },
     },
     mounted() {
-        this.$refs['padding'].update(this.$refs['content']);
+        // this.$refs['padding'].update(this.$refs['content']);
     },
 };
 </script>

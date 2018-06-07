@@ -4,16 +4,22 @@
         .scroll-content(ref="content")
             slot(name="wrap")
     .scroll-bar-vertical(
-        v-if="vertical && verticalShow"
+        v-if="verticalShow"
         @mousedown="down(arguments, 'vertical')"
         :class="{'active': dragging.vertical}"
         :style="{'width': verticalPadding.width + 'px', 'height': verticalPadding.height + 'px', 'top': verticalPadding.top + 'px', 'right': verticalPadding.right + 'px', 'left': verticalPadding.left + 'px'}"
+    )
+    .scroll-bar-horizon(
+        v-if="horizonShow"
+        @mousedown="down(arguments, 'horizon')"
+        :class="{'active': dragging.horizon}"
+        :style="{'width': horizonPadding.width + 'px', 'height': horizonPadding.height + 'px', 'top': horizonPadding.top + 'px', 'bottom': horizonPadding.bottom + 'px', 'left': horizonPadding.left + 'px'}"
     )
 </template>
 <style lang="stylus" scoped>
 .vue-scroll-wrap
     position relative
-    .scroll-bar-vertical
+    .scroll-bar-vertical, .scroll-bar-horizon
         position absolute
         border-radius 15px
         background-color #c5c5c5
