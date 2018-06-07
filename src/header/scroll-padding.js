@@ -1,3 +1,6 @@
+import { addResizeListener, removeResizeListener } from 'CONFIG/resize-event';
+import throttle from 'throttle-debounce/throttle';
+
 export default {
     name: 'vue-scroll-padding',
     props: {
@@ -22,6 +25,7 @@ export default {
                 right: '',
                 left: '',
             },
+            resizeEvent: '',
         };
     },
     watch: {
@@ -82,5 +86,14 @@ export default {
     mounted() {
         this.scrollWrap = this.$refs['scroll-wrap'];
         this.scrollPadding = this.$refs['scroll-padding'];
+        this, (resizeEvent = throttle(50, () => {}));
+        addResizeListener(this.$refs['crm-table'], this.resizeEvent);
+        this.$refs['crm-table'].addEventListener(
+            'scroll',
+            this.scrollHorizonEvent,
+        );
+    },
+    destoryed() {
+        // remove
     },
 };
