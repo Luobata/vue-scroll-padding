@@ -24,13 +24,28 @@ export default {
             scrollPadding: '',
             scrollEelement: 'wrap',
             verticalPadding: {
-                width: '5px',
+                width: 5,
                 height: '',
                 top: '',
                 right: '',
                 left: '',
             },
             resizeEvent: '',
+            dragging: {
+                vertical: false,
+                horizon: false,
+            },
+            verticalStart: 0,
+            horizonStart: 0,
+            inner: {
+                // 滚动区域的高度和宽度 考虑到padding
+                height: 0,
+                width: 0,
+                paddingTop: 10,
+                paddingBottom: 10,
+                paddingLeft: 10,
+                paddingRight: 10,
+            },
         };
     },
     watch: {
@@ -60,39 +75,79 @@ export default {
             }
         },
         getVertical(parent, inner) {
-            const paddingTop = 10;
-            const paddingBottom = 10;
-            const paddingRight = 10;
-            const paddingLeft = 10;
-
             // 滚动区域完整高度
-            const innerRealHeight = parent.height - paddingTop - paddingBottom;
+            this.inner.height =
+                parent.height -
+                this.inner.paddingTop -
+                this.inner.paddingBottom;
             // 滚动区域顶部距离
             const scrollHeight =
-                (parent.height / inner.height) * innerRealHeight;
+                (parent.height / inner.height) * this.inner.height;
             const scrollTop =
                 (this.scrollPadding.scrollTop / parent.height) * scrollHeight;
-            this.verticalPadding.top = `${scrollTop + paddingTop}px`;
-            this.verticalPadding.height = `${scrollHeight}px`;
+            this.verticalPadding.top = scrollTop + this.inner.paddingTop;
+            this.verticalPadding.height = scrollHeight;
 
             if (this.verticalDirection === 'right') {
-                this.verticalPadding.right = `${paddingRight}px`;
+                this.verticalPadding.right = this.inner.paddingRight;
             } else {
-                this.verticalPadding.left = `${paddingLeft}px`;
+                this.verticalPadding.left = this.inner.paddingLeft;
             }
+        },
+        scrollVertical(movement = 0) {
+            const targetY = this.verticalPadding.top + movement;
+            if (targetY < this.inner.paddingTop) {
+                this.verticalPadding.top = this.inner.paddingTop;
+            } else if (
+                targetY + this.verticalPadding.height - this.inner.paddingTop >
+                this.inner.height
+            ) {
+                this.verticalPadding.top =
+                    this.inner.height +
+                    this.inner.paddingTop -
+                    this.verticalPadding.height;
+            } else {
+                this.verticalPadding.top = targetY;
+            }
+
+            const scrollY =
+                (movement / this.verticalPadding.height) *
+                this.scrollPadding.getBoundingClientRect().height;
+            this.scrollPadding.scrollTop += scrollY;
+        },
+        scrollHorizion() {},
+        down(args, type) {
+            this.dragging[type] = true;
+            const e = args[0];
+            if (type === 'vertical') {
+                this.verticalStart = e.pageY;
+            } else {
+                this.horizonStart = e.pageX;
+            }
+        },
+        move(e) {
+            if (this.dragging.vertical) {
+                const movement = e.pageY - this.verticalStart;
+                this.scrollVertical(movement);
+                this.verticalStart = e.pageY;
+            } else {
+                const movement = e.pageX - this.horizonStart;
+                this.scrollHorizion(movement);
+                this.horizonStart = e.pageX;
+            }
+            // console.log('move:', e);
+        },
+        up() {
+            this.dragging.vertical = false;
+            this.dragging.horizon = false;
         },
         update(content) {
             this.content = content;
         },
-        scroll(e) {
-            if (this.scrollEelement === 'padding') {
-                const top = e.target.scrollTop;
-                this.scrollPadding.scrollTop = top;
-            }
-            e.stopPropagation();
-            e.preventDefault();
-        },
         parentScroll(e) {
+            if (this.dragging.vertical) {
+                return;
+            }
             this.resizeEvent();
             e.stopPropagation();
             e.preventDefault();
@@ -105,12 +160,12 @@ export default {
             this.computedShow();
         });
         addResizeListener(this.scrollContent, this.resizeEvent);
-        // this.scrollContent.addEventListener(
-        //     'scroll',
-        //     this.scrollHorizonEvent,
-        // );
+        document.addEventListener('mousemove', this.move);
+        document.addEventListener('mouseup', this.up);
     },
     destoryed() {
         removeResizeListener(this.scrollContent, this.resizeEvent);
+        document.removeEventListener('mousemove', this.move);
+        document.removeEventListener('mouseup', this.up);
     },
 };

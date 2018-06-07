@@ -24,6 +24,7 @@
     .li:hover
         background red
 .button
+    margin-top 100px
     width 100px
     height 100px
     background red

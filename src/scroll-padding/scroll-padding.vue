@@ -5,7 +5,9 @@
             slot(name="wrap")
     .scroll-bar-vertical(
         v-if="vertical && verticalShow"
-        :style="{'width': verticalPadding.width, 'height': verticalPadding.height, 'top': verticalPadding.top, 'right': verticalPadding.right, 'left': verticalPadding.left}"
+        @mousedown="down(arguments, 'vertical')"
+        :class="{'active': dragging.vertical}"
+        :style="{'width': verticalPadding.width + 'px', 'height': verticalPadding.height + 'px', 'top': verticalPadding.top + 'px', 'right': verticalPadding.right + 'px', 'left': verticalPadding.left + 'px'}"
     )
 </template>
 <style lang="stylus" scoped>
@@ -15,6 +17,8 @@
         position absolute
         border-radius 15px
         background-color #c5c5c5
+        &.active
+            background-color #b2b2b2
 .vue-scroll-padding
     position relative
     max-height 200px
