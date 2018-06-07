@@ -13,6 +13,12 @@ export default {
             type: String,
             default: 'right',
         },
+        maxHeight: {
+            type: String,
+        },
+        maxWidth: {
+            type: String,
+        },
     },
     data() {
         return {

@@ -1,6 +1,6 @@
 <template lang="pug">
 .vue-scroll-wrap
-    .vue-scroll-padding(ref="padding"  @scroll="parentScroll")
+    .vue-scroll-padding(ref="padding"  @scroll="parentScroll" :style="{'max-height': maxHeight, 'max-width': maxWidth}")
         .scroll-content(ref="content")
             slot(name="wrap")
     .scroll-bar-vertical(
@@ -17,15 +17,15 @@
         position absolute
         border-radius 15px
         background-color #c5c5c5
+        z-index 10000
         &.active
             background-color #b2b2b2
 .vue-scroll-padding
     position relative
-    max-height 200px
-    overflow hidden
     overflow auto
 .vue-scroll-padding::-webkit-scrollbar
     width 0
+    height 0
     background transparent
 </style>
 

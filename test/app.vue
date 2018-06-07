@@ -3,6 +3,8 @@
         vue-scroll-padding.padding(
             ref="padding"
             :vertical="true"
+            maxHeight="200px"
+            maxWidth="200px"
         )
             .ul(slot="wrap" ref="content")
                 .li(v-for="item in lists") {{ item }}
@@ -15,6 +17,8 @@
 .padding
     width 200px
     border 1px solid red
+    .ul
+        width 500px
     .li
         width 100%
         height 80px
@@ -22,7 +26,7 @@
         cursor pointer
         border-bottom 1px solid green
     .li:hover
-        background red
+        background #73f173
 .button
     margin-top 100px
     width 100px
