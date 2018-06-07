@@ -24,6 +24,7 @@
         border-radius 15px
         background-color #c5c5c5
         z-index 10000
+        user-select none
         &.active
             background-color #b2b2b2
 .vue-scroll-padding

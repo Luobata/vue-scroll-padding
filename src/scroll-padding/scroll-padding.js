@@ -72,28 +72,38 @@ export default {
                     paddingRight: 10,
                 },
             },
+            downPoint: {
+                vertical: {
+                    start: '',
+                    top: '',
+                },
+                horizon: {
+                    start: '',
+                    left: '',
+                },
+            },
         };
     },
     watch: {},
     methods: {
-        computedShow(type) {
+        computedShow() {
             // resize 计算滚动条是否展示
             const rect = this.wrap.getBoundingClientRect();
             const parentRect = this.scrollPadding.getBoundingClientRect();
             if (parentRect.height < rect.height) {
                 this.verticalShow = true;
-                if (type !== 'vertical') {
-                    this.getVertical(parentRect, rect);
-                }
+                // if (type !== 'vertical') {
+                this.getVertical(parentRect, rect);
+                // }
             } else {
                 this.verticalShow = false;
             }
 
             if (parentRect.width < rect.width) {
                 this.horizonShow = true;
-                if (type !== 'horizon') {
-                    this.getHorizon(parentRect, rect);
-                }
+                // if (type !== 'horizon') {
+                this.getHorizon(parentRect, rect);
+                // }
             } else {
                 this.horizonShow = false;
             }
@@ -148,7 +158,8 @@ export default {
             );
         },
         scrollVertical(movement = 0) {
-            const targetY = this.verticalPadding.top + movement;
+            const startTop = this.downPoint.vertical.top;
+            const targetY = startTop + movement;
             if (targetY < this.inner.vertical.paddingTop) {
                 this.verticalPadding.top = this.inner.vertical.paddingTop;
             } else if (
@@ -171,23 +182,53 @@ export default {
             this.scrollPadding.scrollTop += scrollY;
             // this.scrollPadding.scrollLeft = this.getHorizonScrollLeft();
         },
-        scrollHorizion(movement) {},
+        scrollHorizion(movement) {
+            const startLeft = this.downPoint.horizon.left;
+            const targetX = startLeft + movement;
+            if (targetX < this.inner.horizon.paddingLeft) {
+                this.horizonPadding.left = this.inner.horizon.paddingLeft;
+            } else if (
+                targetX +
+                    this.horizonPadding.width -
+                    this.inner.horizon.paddingLeft >
+                this.inner.horizon.width
+            ) {
+                this.horizonPadding.left =
+                    this.inner.horizon.width +
+                    this.inner.horizon.paddingLeft -
+                    this.horizonPadding.width;
+            } else {
+                this.horizonPadding.left = targetX;
+            }
+
+            const scrollX =
+                (movement / this.horizonPadding.width) *
+                this.scrollPadding.getBoundingClientRect().width;
+            this.scrollPadding.scrollLeft += scrollX;
+        },
         down(args, type) {
             this.dragging[type] = true;
             const e = args[0];
             if (type === 'vertical') {
-                this.verticalStart = e.pageY;
+                this.downPoint.vertical = {
+                    start: e.pageY,
+                    top: this.verticalPadding.top,
+                };
             } else {
+                this.downPoint.horizon = {
+                    start: e.pageX,
+                    left: this.horizonPadding.left,
+                };
                 this.horizonStart = e.pageX;
             }
         },
         move(e) {
             if (this.dragging.vertical) {
-                const movement = e.pageY - this.verticalStart;
+                const movement = e.pageY - this.downPoint.vertical.start;
                 this.scrollVertical(movement);
-                this.verticalStart = e.pageY;
-            } else {
-                const movement = e.pageX - this.horizonStart;
+                // this.verticalStart = e.pageY;
+            } else if (this.dragging.horizon) {
+                const movement = e.pageX - this.downPoint.horizon.start;
                 this.scrollHorizion(movement);
                 this.horizonStart = e.pageX;
             }
@@ -201,14 +242,14 @@ export default {
             e.stopPropagation();
             e.preventDefault();
             // 不能直接return 拖拽vertical的时候 可以触发horizon的滚动
-            // if (this.dragging.vertical || this.dragging.horizon) {
-            //     return;
-            // }
-            if (this.dragging.vertical) {
-                this.resizeEvent('vertical');
-            } else {
-                this.resizeEvent('horizon');
+            if (this.dragging.vertical || this.dragging.horizon) {
+                return;
             }
+            // if (this.dragging.vertical) {
+            //     this.resizeEvent('vertical');
+            // } else {
+            //     this.resizeEvent('horizon');
+            // }
         },
     },
     mounted() {

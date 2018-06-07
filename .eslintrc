@@ -28,6 +28,7 @@
         "react/jsx-filename-extension": "off",
         "no-plusplus": "off",
         "no-restricted-syntax": "off",
+        "arrow-parens": ["error", "as-needed"],
         "no-mixed-operators": [
             "error",
             {
