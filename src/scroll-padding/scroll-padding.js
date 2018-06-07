@@ -1,4 +1,4 @@
-import { addResizeListener, removeResizeListener } from 'CONFIG/resize-event';
+import { addResizeListener, removeResizeListener } from 'Lib/resize-event';
 import throttle from 'throttle-debounce/throttle';
 
 export default {
@@ -15,7 +15,7 @@ export default {
             hasPadding: true,
             content: '',
             height: '0px',
-            scrollWrap: '',
+            scrollContent: '',
             scrollPadding: '',
             scrollEelement: 'wrap',
             verticalPadding: {
@@ -46,15 +46,22 @@ export default {
             }
 
             const rect = wrap.getBoundingClientRect();
-            const parentRect = this.$refs.padding.getBoundingClientRect();
-            if (parentRect.height > rect.height && tthis.vertical) {
+            const parentRect = this.scrollPadding.getBoundingClientRect();
+            if (parentRect.height < rect.height && this.vertical) {
                 this.verticalShow = true;
-                this.getVertical();
+                this.getVertical(parentRect.height, rect.height);
             } else {
                 this.verticalShow = false;
             }
         },
-        getVertical() {},
+        getVertical(parentHeight, innerHeight) {
+            console.log(1);
+            const paddingTop = 10;
+            const paddingBottom = 10;
+            const paddingRight = 10;
+
+            const innerRealHeight = parentHeight - paddingTop - paddingBottom;
+        },
         update(content) {
             this.content = content;
         },
@@ -84,14 +91,16 @@ export default {
         },
     },
     mounted() {
-        this.scrollWrap = this.$refs['scroll-wrap'];
-        this.scrollPadding = this.$refs['scroll-padding'];
-        this, (resizeEvent = throttle(50, () => {}));
-        addResizeListener(this.$refs['crm-table'], this.resizeEvent);
-        this.$refs['crm-table'].addEventListener(
-            'scroll',
-            this.scrollHorizonEvent,
-        );
+        this.scrollContent = this.$refs.content;
+        this.scrollPadding = this.$refs.padding;
+        this.resizeEvent = throttle(50, () => {
+            this.computedShow();
+        });
+        addResizeListener(this.scrollContent, this.resizeEvent);
+        // this.scrollContent.addEventListener(
+        //     'scroll',
+        //     this.scrollHorizonEvent,
+        // );
     },
     destoryed() {
         // remove

@@ -1,4 +1,4 @@
-import app from './header/header.vue';
+import app from './scroll-padding/scroll-padding.vue';
 
 const install = (Vue, conf) => {
     Vue.component(app.name, app);
