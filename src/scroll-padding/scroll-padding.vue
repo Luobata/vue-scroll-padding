@@ -1,8 +1,9 @@
 <template lang="pug">
 .vue-scroll-wrap
-    .vue-scroll-padding(ref="padding"  @scroll="parentScroll" :style="{'max-height': maxHeight, 'max-width': maxWidth}")
-        .scroll-content(ref="content")
-            slot(name="wrap")
+    .vue-scroll-overflow(:style="{'height': maxHeight, 'width': maxWidth}")
+        .vue-scroll-padding(ref="padding"  @scroll="parentScroll")
+            .scroll-content(ref="content")
+                slot(name="wrap")
     .scroll-bar-vertical(
         v-if="verticalShow"
         @mousedown="down(arguments, 'vertical')"
@@ -19,6 +20,9 @@
 <style lang="stylus" scoped>
 .vue-scroll-wrap
     position relative
+    .vue-scroll-overflow
+        position relative
+        overflow hidden
     .scroll-bar-vertical, .scroll-bar-horizon
         position absolute
         border-radius 15px
@@ -30,10 +34,19 @@
 .vue-scroll-padding
     position relative
     overflow auto
+    position absolute
+    left 0
+    top 0
+    .scroll-content
+        width 200px
+        height 200px
 .vue-scroll-padding::-webkit-scrollbar
-    width 0
-    height 0
-    background transparent
+    // width 0
+    // height 0
+    // background transparent
+.vue-scroll-padding
+    -ms-overflow-style none
+    overflow -moz-scrollbars-none
 </style>
 
 <script src="./scroll-padding.js"></script>

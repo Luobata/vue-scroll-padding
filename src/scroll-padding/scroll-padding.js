@@ -1,6 +1,8 @@
 import throttle from 'throttle-debounce/throttle';
 import { addResizeListener, removeResizeListener } from 'Lib/resize-event';
 
+const scrollXMargin = 17;
+const scrollYMargin = 17;
 export default {
     name: 'vue-scroll-padding',
     props: {
@@ -90,7 +92,7 @@ export default {
             // resize 计算滚动条是否展示
             const rect = this.wrap.getBoundingClientRect();
             const parentRect = this.scrollPadding.getBoundingClientRect();
-            if (parentRect.height < rect.height) {
+            if (parentRect.height < rect.height - scrollXMargin) {
                 this.verticalShow = true;
                 // if (type !== 'vertical') {
                 this.getVertical(parentRect, rect);
@@ -113,7 +115,9 @@ export default {
             this.inner.vertical.height =
                 parent.height -
                 this.inner.vertical.paddingTop -
-                this.inner.vertical.paddingBottom;
+                this.inner.vertical.paddingBottom -
+                scrollXMargin;
+            console.log(this.inner.vertical.height);
             // 滚动区域顶部距离
             const scrollHeight =
                 parent.height / inner.height * this.inner.vertical.height;
@@ -134,7 +138,8 @@ export default {
             this.inner.horizon.width =
                 parent.width -
                 this.inner.horizon.paddingTop -
-                this.inner.horizon.paddingBottom;
+                this.inner.horizon.paddingBottom -
+                scrollYMargin;
             // 滚动区域顶部距离
             const scrollWidth =
                 parent.width / inner.width * this.inner.horizon.width;
@@ -258,20 +263,21 @@ export default {
     mounted() {
         this.scrollContent = this.$refs.content;
         this.scrollPadding = this.$refs.padding;
+        const wrap = this.$slots.wrap[0].elm;
+        this.wrap = wrap;
+        console.log(wrap);
         this.resizeEvent = throttle(0, type => {
-            const wrap = this.$slots.wrap[0].elm;
-            if (!wrap) {
+            if (!this.wrap) {
                 return;
             }
-            this.wrap = wrap;
             this.computedShow(type);
         });
-        addResizeListener(this.scrollContent, this.resizeEvent);
+        addResizeListener(this.wrap, this.resizeEvent);
         document.addEventListener('mousemove', this.move);
         document.addEventListener('mouseup', this.up);
     },
     destoryed() {
-        removeResizeListener(this.scrollContent, this.resizeEvent);
+        removeResizeListener(this.wrap, this.resizeEvent);
         document.removeEventListener('mousemove', this.move);
         document.removeEventListener('mouseup', this.up);
     },
