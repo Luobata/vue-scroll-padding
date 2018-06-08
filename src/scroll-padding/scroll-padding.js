@@ -1,8 +1,6 @@
 import throttle from 'throttle-debounce/throttle';
 import { addResizeListener, removeResizeListener } from 'Lib/resize-event';
 
-const scrollXMargin = 17;
-const scrollYMargin = 17;
 export default {
     name: 'vue-scroll-padding',
     props: {
@@ -25,6 +23,10 @@ export default {
     },
     data() {
         return {
+            margin: {
+                vertical: 0,
+                horizon: 0,
+            },
             wrap: '',
             verticalShow: false,
             horizonShow: false,
@@ -91,23 +93,23 @@ export default {
     watch: {},
     methods: {
         computedShow() {
+            const parent = this.scrollPadding.getBoundingClientRect();
+            const child = this.scrollContent.getBoundingClientRect();
+            this.margin.vertical = parent.width - child.width;
+            this.margin.horizon = parent.height - child.height;
             // resize 计算滚动条是否展示
             const rect = this.wrap.getBoundingClientRect();
             const parentRect = this.scrollPadding.getBoundingClientRect();
-            if (parentRect.height < rect.height - scrollXMargin) {
+            if (parentRect.height < rect.height - this.margin.vertical) {
                 this.verticalShow = true;
-                // if (type !== 'vertical') {
                 this.getVertical(parentRect, rect);
-                // }
             } else {
                 this.verticalShow = false;
             }
 
-            if (parentRect.width < rect.width) {
+            if (parentRect.width < rect.width - this.margin.horizon) {
                 this.horizonShow = true;
-                // if (type !== 'horizon') {
                 this.getHorizon(parentRect, rect);
-                // }
             } else {
                 this.horizonShow = false;
             }
@@ -118,7 +120,7 @@ export default {
                 parent.height -
                 this.inner.vertical.paddingTop -
                 this.inner.vertical.paddingBottom -
-                scrollXMargin;
+                this.margin.vertical;
             // 滚动区域顶部距离
             const scrollHeight =
                 (parent.height / inner.height) * this.inner.vertical.height;
@@ -140,7 +142,7 @@ export default {
                 parent.width -
                 this.inner.horizon.paddingTop -
                 this.inner.horizon.paddingBottom -
-                scrollYMargin;
+                this.margin.horizon;
             // 滚动区域顶部距离
             const scrollWidth =
                 (parent.width / inner.width) * this.inner.horizon.width;
@@ -236,13 +238,11 @@ export default {
             if (this.dragging.vertical) {
                 const movement = e.pageY - this.downPoint.vertical.start;
                 this.scrollVertical(movement);
-                // this.verticalStart = e.pageY;
             } else if (this.dragging.horizon) {
                 const movement = e.pageX - this.downPoint.horizon.start;
                 this.scrollHorizion(movement);
                 this.horizonStart = e.pageX;
             }
-            // console.log('move:', e);
         },
         up() {
             this.dragging.vertical = false;
@@ -251,16 +251,10 @@ export default {
         parentScroll(e) {
             e.stopPropagation();
             e.preventDefault();
-            // 不能直接return 拖拽vertical的时候 可以触发horizon的滚动
             if (this.dragging.vertical || this.dragging.horizon) {
                 return;
             }
             this.resizeEvent();
-            // if (this.dragging.vertical) {
-            //     this.resizeEvent('vertical');
-            // } else {
-            //     this.resizeEvent('horizon');
-            // }
         },
     },
     mounted() {
@@ -268,7 +262,6 @@ export default {
         this.scrollPadding = this.$refs.padding;
         const wrap = this.$slots.wrap[0].elm;
         this.wrap = wrap;
-        console.log(wrap);
         this.resizeEvent = throttle(0, type => {
             if (!this.wrap) {
                 return;

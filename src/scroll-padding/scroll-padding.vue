@@ -29,6 +29,7 @@
         background-color #c5c5c5
         z-index 10000
         user-select none
+        -moz-user-select none
         &.active
             background-color #b2b2b2
 .vue-scroll-padding
@@ -46,7 +47,8 @@
     background transparent
 .vue-scroll-padding
     -ms-overflow-style none
-    overflow -moz-scrollbars-none
+    overflow -moz-scrollbars-vertical
+    // overflow -moz-scrollbars-none
 </style>
 
 <script src="./scroll-padding.js"></script>

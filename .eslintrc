@@ -12,7 +12,8 @@
     },
     "plugins": ["react"],
     "rules": {
-        //"extensions": "always",
+        "import/no-extraneous-dependencies": "off",
+        "import/extensions": "off",
         "no-continue": "off",
         "indent": ["error", 4],
         "global-require": "off",
