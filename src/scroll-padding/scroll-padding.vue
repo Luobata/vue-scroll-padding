@@ -41,9 +41,9 @@
         width 200px
         height 200px
 .vue-scroll-padding::-webkit-scrollbar
-    // width 0
-    // height 0
-    // background transparent
+    width 0
+    height 0
+    background transparent
 .vue-scroll-padding
     -ms-overflow-style none
     overflow -moz-scrollbars-none

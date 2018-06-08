@@ -78,10 +78,12 @@ export default {
                 vertical: {
                     start: '',
                     top: '',
+                    scrollTop: '',
                 },
                 horizon: {
                     start: '',
                     left: '',
+                    scrollLeft: '',
                 },
             },
         };
@@ -117,12 +119,11 @@ export default {
                 this.inner.vertical.paddingTop -
                 this.inner.vertical.paddingBottom -
                 scrollXMargin;
-            console.log(this.inner.vertical.height);
             // 滚动区域顶部距离
             const scrollHeight =
-                parent.height / inner.height * this.inner.vertical.height;
+                (parent.height / inner.height) * this.inner.vertical.height;
             const scrollTop =
-                this.scrollPadding.scrollTop / parent.height * scrollHeight;
+                (this.scrollPadding.scrollTop / parent.height) * scrollHeight;
             this.verticalPadding.top =
                 scrollTop + this.inner.vertical.paddingTop;
             this.verticalPadding.height = scrollHeight;
@@ -142,9 +143,9 @@ export default {
                 scrollYMargin;
             // 滚动区域顶部距离
             const scrollWidth =
-                parent.width / inner.width * this.inner.horizon.width;
+                (parent.width / inner.width) * this.inner.horizon.width;
             const scrollLeft =
-                this.scrollPadding.scrollLeft / parent.width * scrollWidth;
+                (this.scrollPadding.scrollLeft / parent.width) * scrollWidth;
             this.horizonPadding.left =
                 scrollLeft + this.inner.horizon.paddingLeft;
             this.horizonPadding.width = scrollWidth;
@@ -157,14 +158,15 @@ export default {
         },
         getHorizonScrollLeft() {
             return (
-                (this.horizonPadding.left - this.inner.horizon.paddingLeft) /
-                this.horizonPadding.width *
+                ((this.horizonPadding.left - this.inner.horizon.paddingLeft) /
+                    this.horizonPadding.width) *
                 this.scrollPadding.getBoundingClientRect().width
             );
         },
         scrollVertical(movement = 0) {
             const startTop = this.downPoint.vertical.top;
             const targetY = startTop + movement;
+            const startScrollTop = this.downPoint.vertical.scrollTop;
             if (targetY < this.inner.vertical.paddingTop) {
                 this.verticalPadding.top = this.inner.vertical.paddingTop;
             } else if (
@@ -182,15 +184,15 @@ export default {
             }
 
             const scrollY =
-                movement /
-                this.verticalPadding.height *
+                (movement / this.verticalPadding.height) *
                 this.scrollPadding.getBoundingClientRect().height;
-            this.scrollPadding.scrollTop += scrollY;
+            this.scrollPadding.scrollTop = startScrollTop + scrollY;
             // this.scrollPadding.scrollLeft = this.getHorizonScrollLeft();
         },
         scrollHorizion(movement) {
             const startLeft = this.downPoint.horizon.left;
             const targetX = startLeft + movement;
+            const startScrollLeft = this.downPoint.horizon.scrollLeft;
             if (targetX < this.inner.horizon.paddingLeft) {
                 this.horizonPadding.left = this.inner.horizon.paddingLeft;
             } else if (
@@ -208,10 +210,9 @@ export default {
             }
 
             const scrollX =
-                movement /
-                this.horizonPadding.width *
+                (movement / this.horizonPadding.width) *
                 this.scrollPadding.getBoundingClientRect().width;
-            this.scrollPadding.scrollLeft += scrollX;
+            this.scrollPadding.scrollLeft = startScrollLeft + scrollX;
         },
         down(args, type) {
             this.dragging[type] = true;
@@ -220,11 +221,13 @@ export default {
                 this.downPoint.vertical = {
                     start: e.pageY,
                     top: this.verticalPadding.top,
+                    scrollTop: this.scrollPadding.scrollTop,
                 };
             } else {
                 this.downPoint.horizon = {
                     start: e.pageX,
                     left: this.horizonPadding.left,
+                    scrollLeft: this.scrollPadding.scrollLeft,
                 };
                 this.horizonStart = e.pageX;
             }
