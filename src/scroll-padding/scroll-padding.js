@@ -116,9 +116,9 @@ export default {
                 this.inner.vertical.paddingBottom;
             // 滚动区域顶部距离
             const scrollHeight =
-                (parent.height / inner.height) * this.inner.vertical.height;
+                parent.height / inner.height * this.inner.vertical.height;
             const scrollTop =
-                (this.scrollPadding.scrollTop / parent.height) * scrollHeight;
+                this.scrollPadding.scrollTop / parent.height * scrollHeight;
             this.verticalPadding.top =
                 scrollTop + this.inner.vertical.paddingTop;
             this.verticalPadding.height = scrollHeight;
@@ -137,9 +137,9 @@ export default {
                 this.inner.horizon.paddingBottom;
             // 滚动区域顶部距离
             const scrollWidth =
-                (parent.width / inner.width) * this.inner.horizon.width;
+                parent.width / inner.width * this.inner.horizon.width;
             const scrollLeft =
-                (this.scrollPadding.scrollLeft / parent.width) * scrollWidth;
+                this.scrollPadding.scrollLeft / parent.width * scrollWidth;
             this.horizonPadding.left =
                 scrollLeft + this.inner.horizon.paddingLeft;
             this.horizonPadding.width = scrollWidth;
@@ -152,8 +152,8 @@ export default {
         },
         getHorizonScrollLeft() {
             return (
-                ((this.horizonPadding.left - this.inner.horizon.paddingLeft) /
-                    this.horizonPadding.width) *
+                (this.horizonPadding.left - this.inner.horizon.paddingLeft) /
+                this.horizonPadding.width *
                 this.scrollPadding.getBoundingClientRect().width
             );
         },
@@ -177,7 +177,8 @@ export default {
             }
 
             const scrollY =
-                (movement / this.verticalPadding.height) *
+                movement /
+                this.verticalPadding.height *
                 this.scrollPadding.getBoundingClientRect().height;
             this.scrollPadding.scrollTop += scrollY;
             // this.scrollPadding.scrollLeft = this.getHorizonScrollLeft();
@@ -202,7 +203,8 @@ export default {
             }
 
             const scrollX =
-                (movement / this.horizonPadding.width) *
+                movement /
+                this.horizonPadding.width *
                 this.scrollPadding.getBoundingClientRect().width;
             this.scrollPadding.scrollLeft += scrollX;
         },
@@ -245,6 +247,7 @@ export default {
             if (this.dragging.vertical || this.dragging.horizon) {
                 return;
             }
+            this.resizeEvent();
             // if (this.dragging.vertical) {
             //     this.resizeEvent('vertical');
             // } else {
