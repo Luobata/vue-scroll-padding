@@ -23,6 +23,8 @@ export default {
     },
     data() {
         return {
+            width: '',
+            height: '',
             margin: {
                 vertical: 0,
                 horizon: 0,
@@ -31,8 +33,6 @@ export default {
             verticalShow: false,
             horizonShow: false,
             hasPadding: true,
-            content: '',
-            height: '0px',
             scrollContent: '',
             scrollPadding: '',
             scrollEelement: 'wrap',
@@ -95,29 +95,52 @@ export default {
         computedShow() {
             const parent = this.scrollPadding.getBoundingClientRect();
             const child = this.scrollContent.getBoundingClientRect();
+            const wrap = this.wrap.getBoundingClientRect();
             this.margin.vertical = parent.width - child.width;
             this.margin.horizon = parent.height - child.height;
-            console.log(this.margin.horizon);
             // resize 计算滚动条是否展示
             const rect = this.wrap.getBoundingClientRect();
             const parentRect = this.scrollPadding.getBoundingClientRect();
+            let parentHeight = 0;
+            let parentWidth = 0;
+
+            // vertical height
+            if (wrap.height < parseFloat(this.maxHeight, 10)) {
+                this.height = wrap.height + 'px';
+                parentHeight = wrap.height;
+            } else {
+                this.height = this.maxHeight;
+                parentHeight = parseFloat(this.maxHeight, 0);
+            }
+
+            // horizion width
+            if (wrap.width < parseFloat(this.maxWidth, 10)) {
+                this.width = wrap.width + 'px';
+                parentWidth = wrap.width;
+            } else {
+                this.width = this.maxWidth;
+                parentWidth = parseFloat(this.maxWidth, 0);
+            }
+
+            // vertical padding
             if (parentRect.height < rect.height - this.margin.vertical) {
                 this.verticalShow = true;
-                this.getVertical(parentRect, rect);
+                this.getVertical(parentHeight, rect);
             } else {
                 this.verticalShow = false;
             }
 
+            // horizon padding
             if (parentRect.width < rect.width - this.margin.horizon) {
                 this.horizonShow = true;
-                this.getHorizon(parentRect, rect);
+                this.getHorizon(parentWidth, rect);
             } else {
                 this.horizonShow = false;
             }
         },
-        getVertical(parent, inner) {
+        getVertical(pHeight, inner) {
             // 滚动区域完整高度
-            const parentHeight = parent.height - this.margin.horizon;
+            const parentHeight = pHeight;
             this.inner.vertical.height =
                 parentHeight -
                 this.inner.vertical.paddingTop -
@@ -137,9 +160,10 @@ export default {
                 this.verticalPadding.left = this.inner.vertical.paddingLeft;
             }
         },
-        getHorizon(parent, inner) {
+        getHorizon(pWidth, inner) {
             // 滚动区域完整高度
-            const parentWidth = parent.width - this.margin.vertical;
+            // const parentWidth = parent.width - this.margin.vertical;
+            const parentWidth = pWidth;
             this.inner.horizon.width =
                 parentWidth -
                 this.inner.horizon.paddingTop -

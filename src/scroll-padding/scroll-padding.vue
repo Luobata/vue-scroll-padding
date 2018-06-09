@@ -1,8 +1,8 @@
 <template lang="pug">
 .vue-scroll-wrap
-    .vue-scroll-overflow(:style="{'height': maxHeight, 'width': maxWidth}")
+    .vue-scroll-overflow(:style="{'height': height, 'width': width}")
         .vue-scroll-padding(ref="padding"  @scroll="parentScroll")
-            .scroll-content(ref="content")
+            .scroll-content(:style="{'height': height, 'width': width}" ref="content")
                 slot(name="wrap")
     .scroll-bar-vertical(
         v-if="verticalShow"
@@ -40,7 +40,7 @@
     top 0
     .scroll-content
         width 200px
-        height 200px
+        // height 200px
 .vue-scroll-padding::-webkit-scrollbar
     // width 0
     // height 0
