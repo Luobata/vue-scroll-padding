@@ -25,6 +25,7 @@
         background yellow
         cursor pointer
         border-bottom 1px solid green
+        border-right 1px solid blue
     .li:hover
         background #73f173
 .button
